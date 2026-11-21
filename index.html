@@ -315,7 +315,7 @@
     .team-section { padding: 104px 0 72px; background: var(--paper-2); }
     .team { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 0; padding: 0; list-style: none; }
     .member a {
-      display: flex; flex-direction: column; gap: 26px; height: 100%; padding: 26px; border-radius: 24px; background: var(--surface);
+      display: flex; flex-direction: column; gap: 20px; height: 100%; padding: 26px; border-radius: 24px; background: var(--surface);
       box-shadow: inset 0 0 0 1px var(--line), var(--shadow-sm); text-decoration: none;
       transition: transform 220ms var(--ease-out), box-shadow 220ms ease;
     }
@@ -325,7 +325,10 @@
     .member:nth-child(2) .avatar { background: var(--brand-soft); color: var(--brand); }
     .member:nth-child(3) .avatar { background: #f7e0da; color: #8f2c1d; }
     .member h3 { font-size: 24px; font-weight: 700; letter-spacing: -.025em; }
-    .member .m-role { margin-top: 6px; color: var(--muted); font-size: 14px; }
+    .member .m-role { margin-top: 8px; color: var(--brand); font-size: 15px; font-weight: 600; line-height: 1.35; }
+    .m-tasks { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; color: var(--ink-2); font-size: 14px; line-height: 1.45; }
+    .m-tasks li { position: relative; padding-left: 18px; }
+    .m-tasks li::before { content: ""; position: absolute; left: 2px; top: .6em; width: 6px; height: 6px; border-radius: 50%; background: var(--marigold); }
     .member .m-link { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 18px; border-top: 1px solid var(--line); color: var(--brand); font-size: 15px; font-weight: 600; }
     .member .m-link small { display: block; color: var(--muted); font: 500 11px/1.4 var(--mono); letter-spacing: .03em; }
     .member .m-link svg { flex: none; transition: transform 220ms var(--ease-out); }
@@ -735,7 +738,8 @@
           <li class="member reveal">
             <a href="https://sites.google.com/pascualbravo.edu.co/angelesvisual?usp=sharing" target="_blank" rel="noopener">
               <div class="avatar" aria-hidden="true">MA</div>
-              <div><h3>Mónica Alvarado</h3><p class="m-role">Integrante del proyecto</p></div>
+              <div><h3>Mónica Alvarado</h3><p class="m-role">Identidad gráfica y documentación</p></div>
+              <ul class="m-tasks"><li>Diseño y elaboración del logotipo e identidad visual del proyecto.</li><li>Redacción y elaboración del ensayo.</li><li>Investigación y documentación de la problemática.</li><li>Recopilación y estructuración de información para la plataforma.</li></ul>
               <span class="m-link"><span>Ver portafolio<small>Google Sites · angelesvisual</small></span>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
               <span class="sr-only">(se abre en una pestaña nueva)</span>
@@ -744,7 +748,8 @@
           <li class="member reveal" style="--d:70ms">
             <a href="https://sites.google.com/pascualbravo.edu.co/emanuelhenaoportafolio/inicio" target="_blank" rel="noopener">
               <div class="avatar" aria-hidden="true">EH</div>
-              <div><h3>Emanuel Henao</h3><p class="m-role">Integrante del proyecto</p></div>
+              <div><h3>Emanuel Henao</h3><p class="m-role">Desarrollo y programación</p></div>
+              <ul class="m-tasks"><li>Diseño y construcción del prototipo digital.</li><li>Desarrollo e implementación de la página web.</li><li>Programación de las funcionalidades de la plataforma.</li><li>Integración de las rutas de orientación y los canales de atención.</li></ul>
               <span class="m-link"><span>Ver portafolio<small>Google Sites · emanuelhenaoportafolio</small></span>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
               <span class="sr-only">(se abre en una pestaña nueva)</span>
@@ -753,7 +758,8 @@
           <li class="member reveal" style="--d:140ms">
             <a href="https://sites.google.com/pascualbravo.edu.co/mi-perfilprofesional/pagina-de-inicio" target="_blank" rel="noopener">
               <div class="avatar" aria-hidden="true">IS</div>
-              <div><h3>Isabella Sepúlveda</h3><p class="m-role">Integrante del proyecto</p></div>
+              <div><h3>Isabella Sepúlveda</h3><p class="m-role">Investigación y contenido</p></div>
+              <ul class="m-tasks"><li>Redacción y elaboración del ensayo.</li><li>Investigación sobre seguridad y delincuencia en Medellín.</li><li>Análisis de la problemática y sus consecuencias.</li><li>Redacción y organización de los contenidos informativos del proyecto.</li></ul>
               <span class="m-link"><span>Ver portafolio<small>Google Sites · mi-perfilprofesional</small></span>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
               <span class="sr-only">(se abre en una pestaña nueva)</span>
