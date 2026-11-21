@@ -775,7 +775,7 @@
 
   <dialog class="lightbox" id="lightbox" aria-label="Pantalla ampliada">
     <div class="lb-inner">
-      <img class="lb-img" id="lb-img" src="" alt="">
+      <img class="lb-img" id="lb-img" alt="">
       <p class="lb-caption" id="lb-caption"></p>
       <div class="lb-controls">
         <button class="icon-btn" type="button" id="lb-prev" aria-label="Pantalla anterior"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18 9 12l6-6"/></svg></button>
@@ -790,7 +790,7 @@
        Usa UNA de las dos opciones:
        - youtube: ID o enlace del video en YouTube (p. ej. "https://youtu.be/XXXXXXXXXXX")
        - file:    ruta a un MP4 dentro del repo (p. ej. "video/video-pitch.mp4") */
-    const VIDEO_CONFIG = { youtube: "", file: "", poster: "" };
+    const VIDEO_CONFIG = { youtube: "https://youtu.be/9-i0l6400KM", file: "", poster: "" };
 
     document.body.classList.remove('no-js');
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
