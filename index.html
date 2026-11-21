@@ -171,6 +171,8 @@
     .section-head { display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: end; margin-bottom: 48px; }
     .sec-num { color: var(--brand); font: 800 clamp(64px, 8vw, 112px)/.78 var(--display); letter-spacing: -.05em; }
     .kicker { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 12px; color: var(--brand); font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+    .section-head.solo { grid-template-columns: 1fr; }
+    .sec-arrow { display: block; width: clamp(56px, 7vw, 92px); height: auto; }
     .section-title { font-size: clamp(34px, 4.4vw, 56px); font-weight: 800; }
     .section-copy { max-width: 640px; margin-top: 14px; color: var(--ink-2); font-size: 17px; }
 
@@ -372,9 +374,14 @@
       .stats { grid-template-columns: 1fr; margin-top: 44px; }
       .section, .team-section { padding: 76px 0; }
       .section-head { grid-template-columns: 1fr; gap: 14px; margin-bottom: 34px; }
-      .process { grid-template-columns: repeat(2, 1fr); }
-      .process a { min-height: 128px; }
-      .process li:last-child { grid-column: span 2; }
+      .process { grid-template-columns: 1fr; gap: 8px; }
+      .process li:last-child { grid-column: auto; }
+      .process a { flex-direction: row; align-items: center; justify-content: flex-start; gap: 14px; min-height: 0; padding: 10px 14px; border-radius: 14px; }
+      .process .p-icon { flex: none; width: 32px; height: 32px; border-radius: 9px; }
+      .process .p-icon svg { width: 16px; height: 16px; }
+      .process a > span:last-child { display: flex; align-items: baseline; gap: 10px; }
+      .process a > span:last-child br { display: none; }
+      .process .p-title { font-size: 16px; }
       .doc-head { padding: 22px; }
       .doc-quote { padding: 22px; }
       .doc-viewer { display: none; }
@@ -473,7 +480,7 @@
     <section class="section" id="proceso" aria-labelledby="proceso-title" style="padding-top:40px">
       <div class="shell">
         <div class="section-head">
-          <div class="sec-num reveal" aria-hidden="true">↘</div>
+          <div class="sec-num reveal" aria-hidden="true"><svg class="sec-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" stroke-linejoin="miter"><path d="M6 6l12 12M18 8v10H8"/></svg></div>
           <div class="reveal" style="--d:60ms">
             <p class="kicker">El proceso</p>
             <h2 class="section-title" id="proceso-title">Siete entregables, una misma pregunta.</h2>
@@ -718,8 +725,7 @@
     <!-- ───────── EQUIPO ───────── -->
     <section class="team-section" id="equipo" aria-labelledby="team-title">
       <div class="shell">
-        <div class="section-head">
-          <div class="sec-num reveal" aria-hidden="true">✦</div>
+        <div class="section-head solo">
           <div class="reveal" style="--d:60ms">
             <p class="kicker">Participantes del proyecto</p>
             <h2 class="section-title" id="team-title">El equipo detrás de la ruta.</h2>
