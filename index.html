@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f3ee">
+  <meta name="description" content="Medellín Te Orienta: proyecto universitario de la I.U. Pascual Bravo. Planteamiento del problema, ensayo, pitch, prototipo, demostración y solución final.">
+  <title>Medellín Te Orienta · Proyecto universitario</title>
+  <link rel="icon" type="image/png" href="assets/favicon-64.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta property="og:title" content="Medellín Te Orienta · Proyecto universitario">
+  <meta property="og:description" content="Del problema a la solución: una guía para saber dónde y cómo reportar incidentes de inseguridad en Medellín.">
+  <meta property="og:image" content="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ───────── Tokens (heredados de la solución final) ───────── */
+    :root {
+      --paper: #f5f3ee;
+      --paper-2: #ece8df;
+      --surface: #ffffff;
+      --ink: #0d1b2a;
+      --ink-2: #33445a;
+      --muted: #5d6b7c;
+      --line: rgba(13, 27, 42, .10);
+      --line-strong: rgba(13, 27, 42, .18);
+      --brand: #1d4f8c;
+      --brand-soft: #e6eef8;
+      --marigold: #f2b53a;
+      --marigold-ink: #2a1d02;
+      --coral: #b83a27;
+      --night: #0d1b2a;
+      --night-2: #142640;
+      --on-night: #f3f5f8;
+      --on-night-muted: #a9b7c8;
+      --ring: #2f73c8;
+
+      --shadow-sm: 0 1px 1px rgba(13,27,42,.04), 0 2px 4px rgba(13,27,42,.04);
+      --shadow-md: 0 1px 2px rgba(13,27,42,.04), 0 6px 16px rgba(13,27,42,.06), 0 18px 40px -12px rgba(13,27,42,.12);
+      --shadow-lg: 0 2px 4px rgba(13,27,42,.05), 0 16px 32px rgba(13,27,42,.10), 0 40px 80px -24px rgba(13,27,42,.24);
+
+      --ease-out: cubic-bezier(.23, 1, .32, 1);
+      --ease-in-out: cubic-bezier(.77, 0, .175, 1);
+
+      --font: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --display: "Outfit", "Geist", sans-serif;
+      --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+      --radius: 20px;
+      --shell: min(1180px, calc(100% - 48px));
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 84px; -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0; background: var(--paper); color: var(--ink);
+      font: 400 16px/1.6 var(--font); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; }
+    button { font: inherit; color: inherit; }
+    h1, h2, h3 { margin: 0; font-family: var(--display); letter-spacing: -.03em; line-height: 1.02; text-wrap: balance; }
+    p { margin: 0; text-wrap: pretty; }
+    .shell { width: var(--shell); margin-inline: auto; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    :focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; border-radius: 8px; }
+
+    .skip-link {
+      position: absolute; left: 16px; top: 12px; z-index: 100; padding: 12px 16px; border-radius: 12px;
+      background: var(--ink); color: #fff; font-weight: 600; text-decoration: none; transform: translateY(-200%);
+    }
+    .skip-link:focus { transform: none; }
+
+    /* ───────── Botones ───────── */
+    .btn {
+      --bg: var(--ink); --fg: #fff;
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      min-height: 48px; padding: 0 22px; border: 0; border-radius: 999px;
+      background: var(--bg); color: var(--fg); font-size: 15px; font-weight: 600; text-decoration: none;
+      cursor: pointer; white-space: nowrap;
+      transition: transform 160ms var(--ease-out), background-color 200ms ease, box-shadow 200ms ease;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn svg { flex: none; transition: transform 200ms var(--ease-out); }
+    .btn-ghost { --bg: transparent; --fg: var(--ink); box-shadow: inset 0 0 0 1px var(--line-strong); }
+    .btn-gold { --bg: var(--marigold); --fg: var(--marigold-ink); }
+    .btn-light { --bg: #fff; --fg: var(--ink); }
+    .btn-sm { min-height: 40px; padding: 0 16px; font-size: 14px; }
+    @media (hover: hover) and (pointer: fine) {
+      .btn:hover { background: color-mix(in srgb, var(--bg) 88%, #fff); }
+      .btn-ghost:hover { background: rgba(13,27,42,.05); }
+      .btn-gold:hover { background: #f6c45c; }
+      .btn:hover svg.arrow-r { transform: translateX(3px); }
+      .btn:hover svg.arrow-d { transform: translateY(2px); }
+      .btn:hover svg.arrow-ur { transform: translate(2px, -2px); }
+    }
+
+    /* ───────── Header ───────── */
+    .site-header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(245,243,238,.78); -webkit-backdrop-filter: saturate(160%) blur(14px); backdrop-filter: saturate(160%) blur(14px);
+      border-bottom: 1px solid transparent; transition: border-color 200ms ease;
+    }
+    .site-header.is-scrolled { border-bottom-color: var(--line); }
+    .header-row { height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; }
+    .logo-tile {
+      width: 40px; height: 40px; flex: none; display: grid; place-items: center; border-radius: 12px; background: #fff;
+      box-shadow: inset 0 0 0 1px var(--line), 0 2px 6px rgba(13,27,42,.08);
+    }
+    .logo-tile img { width: 32px; height: 32px; }
+    .brand-name { display: block; font: 700 16px/1.1 var(--display); letter-spacing: -.02em; white-space: nowrap; }
+    .brand-caption { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .nav { display: flex; align-items: center; gap: 2px; }
+    .nav a {
+      padding: 8px 12px; border-radius: 999px; color: var(--ink-2); font-size: 14px; font-weight: 500; text-decoration: none;
+      transition: background-color 160ms ease, color 160ms ease;
+    }
+    .nav a[aria-current="true"] { color: var(--ink); background: rgba(13,27,42,.06); }
+    @media (hover: hover) { .nav a:hover { color: var(--ink); background: rgba(13,27,42,.05); } }
+
+    /* ───────── Hero ───────── */
+    .hero { position: relative; overflow: hidden; padding: 72px 0 56px; }
+    .hero::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(55% 70% at 12% 0%, rgba(29,79,140,.10), transparent 70%), radial-gradient(40% 55% at 92% 20%, rgba(242,181,58,.18), transparent 70%);
+    }
+    .hero-grid { position: relative; display: grid; grid-template-columns: 1.25fr .9fr; gap: 56px; align-items: center; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 10px; color: var(--ink-2);
+      font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase;
+    }
+    .eyebrow .dot { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--marigold); }
+    .hero h1 { margin-top: 22px; font-size: clamp(48px, 7.4vw, 104px); font-weight: 800; letter-spacing: -.045em; line-height: .92; }
+    .hero h1 em { font-style: normal; color: var(--brand); }
+    .hero-lead { max-width: 560px; margin-top: 26px; color: var(--ink-2); font-size: clamp(17px, 1.6vw, 20px); line-height: 1.55; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 30px; color: var(--muted); font-size: 14px; }
+    .hero-meta span { display: inline-flex; align-items: center; gap: 8px; }
+    .hero-meta svg { color: var(--brand); }
+
+    .hero-art { position: relative; aspect-ratio: 1; max-width: 460px; justify-self: end; width: 100%; }
+    .hero-disc {
+      position: absolute; inset: 0; border-radius: 40px; background: var(--marigold);
+      box-shadow: var(--shadow-lg); overflow: hidden;
+    }
+    .hero-disc::after {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(70% 60% at 30% 20%, rgba(255,255,255,.35), transparent 60%);
+    }
+    .hero-disc img { position: relative; z-index: 1; width: 84%; height: 84%; margin: 8%; object-fit: contain; }
+    .hero-badge {
+      position: absolute; z-index: 2; left: -22px; bottom: 34px; display: flex; align-items: center; gap: 12px;
+      padding: 14px 18px; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow-md);
+      font-size: 14px; line-height: 1.3;
+    }
+    .hero-badge b { display: block; font: 800 28px/1 var(--display); letter-spacing: -.03em; color: var(--coral); }
+    .hero-badge small { display: block; color: var(--muted); font-size: 12px; }
+
+    /* ───────── Stats ───────── */
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 64px; border-radius: var(--radius); overflow: hidden; background: var(--line); box-shadow: var(--shadow-sm); position: relative; }
+    .stat { padding: 26px 28px; background: var(--surface); }
+    .stat-num { font: 800 clamp(40px, 4.6vw, 56px)/1 var(--display); letter-spacing: -.04em; }
+    .stat-num span { color: var(--brand); }
+    .stat p { margin-top: 10px; color: var(--ink-2); font-size: 15px; line-height: 1.45; }
+    .stat cite { display: block; margin-top: 10px; color: var(--muted); font: 500 11px/1.4 var(--mono); letter-spacing: .04em; text-transform: uppercase; font-style: normal; }
+
+    /* ───────── Secciones ───────── */
+    .section { padding: 104px 0; }
+    .section-head { display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: end; margin-bottom: 48px; }
+    .sec-num { color: var(--brand); font: 800 clamp(64px, 8vw, 112px)/.78 var(--display); letter-spacing: -.05em; }
+    .kicker { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 12px; color: var(--brand); font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+    .section-title { font-size: clamp(34px, 4.4vw, 56px); font-weight: 800; }
+    .section-copy { max-width: 640px; margin-top: 14px; color: var(--ink-2); font-size: 17px; }
+
+    /* Índice del proceso */
+    .process { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; counter-reset: step; }
+    .process li { display: flex; }
+    .process a {
+      flex: 1;
+      position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 28px; min-height: 150px; padding: 18px;
+      border-radius: 18px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line), var(--shadow-sm);
+      text-decoration: none; transition: transform 200ms var(--ease-out), box-shadow 200ms ease;
+    }
+    .process a:active { transform: scale(.97); }
+    .process .p-num { color: var(--muted); font: 600 12px/1 var(--mono); letter-spacing: .06em; }
+    .process .p-title { font: 700 17px/1.15 var(--display); letter-spacing: -.02em; }
+    .process .p-icon { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 11px; background: var(--brand-soft); color: var(--brand); transition: background-color 200ms ease, color 200ms ease; }
+    .process a.is-final { background: var(--night); color: var(--on-night); box-shadow: var(--shadow-md); }
+    .process a.is-final .p-num { color: var(--on-night-muted); }
+    .process a.is-final .p-icon { background: var(--marigold); color: var(--marigold-ink); }
+    @media (hover: hover) and (pointer: fine) {
+      .process a:hover { transform: translateY(-3px); box-shadow: inset 0 0 0 1px var(--line-strong), var(--shadow-md); }
+      .process a:not(.is-final):hover .p-icon { background: var(--brand); color: #fff; }
+    }
+
+    /* ───────── Documentos ───────── */
+    .docs { display: grid; grid-template-columns: 340px 1fr; gap: 28px; align-items: start; }
+    .doc-tabs { display: flex; flex-direction: column; gap: 10px; position: sticky; top: 96px; }
+    .doc-tab {
+      display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; width: 100%; padding: 18px; text-align: left;
+      border: 0; border-radius: 18px; background: transparent; cursor: pointer;
+      box-shadow: inset 0 0 0 1px var(--line);
+      transition: background-color 200ms ease, box-shadow 200ms ease, transform 160ms var(--ease-out);
+    }
+    .doc-tab:active { transform: scale(.98); }
+    .doc-tab .t-num { grid-row: span 2; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: var(--paper-2); font: 600 13px/1 var(--mono); transition: background-color 200ms ease, color 200ms ease; }
+    .doc-tab .t-title { font: 700 18px/1.2 var(--display); letter-spacing: -.02em; }
+    .doc-tab .t-sub { color: var(--muted); font-size: 14px; line-height: 1.4; }
+    .doc-tab[aria-selected="true"] { background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--brand), var(--shadow-md); }
+    .doc-tab[aria-selected="true"] .t-num { background: var(--brand); color: #fff; }
+    @media (hover: hover) { .doc-tab:not([aria-selected="true"]):hover { background: rgba(255,255,255,.6); } }
+
+    .doc-panel { border-radius: 24px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line), var(--shadow-md); overflow: hidden; }
+    .doc-panel[hidden] { display: none; }
+    .doc-panel.is-entering { animation: panel-in 320ms var(--ease-out); }
+    @keyframes panel-in { from { opacity: 0; transform: translateY(8px); } }
+    .doc-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 18px; padding: 28px 30px 24px; border-bottom: 1px solid var(--line); }
+    .doc-head h3 { font-size: clamp(24px, 2.6vw, 32px); font-weight: 700; }
+    .doc-meta { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; color: var(--muted); font: 500 12px/1.4 var(--mono); letter-spacing: .04em; text-transform: uppercase; }
+    .doc-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .doc-body { display: grid; grid-template-columns: 1fr; }
+    .doc-quote { margin: 0; padding: 26px 30px; background: var(--paper); border-bottom: 1px solid var(--line); }
+    .doc-quote p { max-width: 760px; font: 600 clamp(18px, 1.8vw, 22px)/1.4 var(--display); letter-spacing: -.015em; color: var(--ink); }
+    .doc-quote p::before { content: "“"; color: var(--marigold); margin-right: 2px; }
+    .doc-quote p::after { content: "”"; color: var(--marigold); }
+    .doc-viewer { height: min(78vh, 860px); background: #e9e7e2; }
+    .doc-viewer iframe { width: 100%; height: 100%; border: 0; display: block; }
+    .doc-mobile { display: none; padding: 22px; gap: 18px; align-items: center; }
+    .doc-mobile img { flex: none; width: 110px; height: auto; border-radius: 10px; box-shadow: var(--shadow-md); }
+
+    /* ───────── Pitch (oscuro) ───────── */
+    .dark { background: var(--night); color: var(--on-night); }
+    .dark .sec-num { color: var(--marigold); }
+    .dark .kicker { color: var(--marigold); }
+    .dark .section-copy { color: var(--on-night-muted); }
+    .pitch-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 28px; align-items: center; }
+    .video-frame {
+      position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 24px; overflow: hidden; background: #050a12;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 40px 80px -30px rgba(0,0,0,.6);
+    }
+    .video-frame video, .video-frame iframe { width: 100%; height: 100%; display: block; border: 0; background: #000; }
+    .video-empty { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px;
+      background: radial-gradient(60% 80% at 50% 40%, rgba(29,79,140,.45), transparent 70%), #07101c; }
+    .video-empty .play { width: 76px; height: 76px; margin: 0 auto 18px; display: grid; place-items: center; border-radius: 50%; background: var(--marigold); color: var(--marigold-ink); }
+    .video-empty p { color: var(--on-night-muted); font-size: 15px; }
+    .video-empty strong { display: block; color: #fff; font: 700 22px/1.2 var(--display); margin-bottom: 6px; }
+    .pitch-card { display: flex; flex-direction: column; gap: 18px; padding: 28px; border-radius: 24px; background: var(--night-2); box-shadow: inset 0 0 0 1px rgba(255,255,255,.07); }
+    .pitch-card h3 { font-size: 26px; font-weight: 700; }
+    .pitch-card blockquote { margin: 0; padding-left: 16px; border-left: 3px solid var(--marigold); color: #fff; font: 500 18px/1.45 var(--display); }
+    .pitch-card p { color: var(--on-night-muted); font-size: 15px; }
+    .pitch-card .btn { align-self: flex-start; margin-top: auto; }
+    .pitch-points { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .pitch-points li { display: flex; gap: 10px; color: var(--on-night); font-size: 15px; }
+    .pitch-points li::before { content: ""; flex: none; width: 6px; height: 6px; margin-top: 9px; border-radius: 50%; background: var(--marigold); }
+
+    /* ───────── Marcos de navegador ───────── */
+    .browser { border-radius: 22px; overflow: hidden; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line), var(--shadow-lg); }
+    .browser-bar { display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 16px; background: var(--paper-2); border-bottom: 1px solid var(--line); }
+    .browser-dots { display: flex; gap: 7px; }
+    .browser-dots i { width: 11px; height: 11px; border-radius: 50%; background: rgba(13,27,42,.16); }
+    .browser-url { flex: 1; min-width: 0; height: 30px; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 9px; background: var(--surface); color: var(--muted); font: 500 12px/1 var(--mono); overflow: hidden; white-space: nowrap; }
+    .browser-url svg { flex: none; color: var(--brand); }
+    .browser-stage { position: relative; height: min(76vh, 780px); background: #e9e7e2; display: flex; justify-content: center; }
+    .browser-stage iframe { width: 100%; height: 100%; border: 0; background: #fff; transition: width 420ms var(--ease-in-out), border-radius 420ms var(--ease-in-out), margin 420ms var(--ease-in-out), height 420ms var(--ease-in-out); }
+    .browser-stage.is-mobile iframe { width: 390px; height: calc(100% - 48px); margin: 24px 0; border-radius: 28px; box-shadow: 0 0 0 8px var(--ink), var(--shadow-lg); }
+    .row-between { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+
+    .segmented { display: inline-flex; padding: 4px; border-radius: 999px; background: rgba(13,27,42,.06); position: relative; }
+    .segmented button { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent; color: var(--ink-2); font-size: 14px; font-weight: 600; cursor: pointer; transition: color 200ms ease; }
+    .segmented button[aria-pressed="true"] { color: var(--ink); }
+    .segmented .thumb { position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 4px; border-radius: 999px; background: var(--surface); box-shadow: var(--shadow-sm); transition: transform 300ms var(--ease-out), width 300ms var(--ease-out); }
+
+    .features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 28px; }
+    .feature { padding: 20px; border-radius: 18px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+    .feature .f-icon { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 11px; background: var(--brand-soft); color: var(--brand); margin-bottom: 14px; }
+    .feature h3 { font-size: 17px; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; }
+    .feature p { margin-top: 6px; color: var(--muted); font-size: 14px; line-height: 1.45; }
+
+    /* ───────── Demostración ───────── */
+    .demo { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; margin: 0; padding: 0; list-style: none; }
+    .shot { display: flex; flex-direction: column; gap: 18px; }
+    .shot button {
+      position: relative; display: block; width: calc(100% - 14px); padding: 0; border: 0; border-radius: 30px; background: var(--ink); cursor: zoom-in;
+      box-shadow: 0 0 0 7px var(--ink), var(--shadow-lg); margin: 7px;
+      transition: transform 260ms var(--ease-out), box-shadow 260ms ease;
+    }
+    .shot button:active { transform: scale(.98); }
+    .shot img { width: 100%; height: auto; aspect-ratio: 788 / 1600; object-fit: cover; object-position: top; border-radius: 24px; }
+    .shot .s-num { position: absolute; z-index: 1; top: -18px; right: -18px; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: var(--marigold); color: var(--marigold-ink); font: 700 14px/1 var(--mono); box-shadow: var(--shadow-md); }
+    .shot h3 { font-size: 19px; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; }
+    .shot p { margin-top: 6px; color: var(--ink-2); font-size: 15px; line-height: 1.45; }
+    @media (hover: hover) and (pointer: fine) { .shot button:hover { transform: translateY(-4px); } }
+
+    /* Lightbox */
+    .lightbox { width: min(560px, 100vw); max-height: 100dvh; padding: 0; border: 0; background: transparent; overflow: visible; }
+    .lightbox::backdrop { background: rgba(7,12,20,.82); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+    .lightbox[open] { animation: dialog-in 240ms var(--ease-out); }
+    .lightbox[open]::backdrop { animation: fade-in 240ms ease; }
+    @keyframes dialog-in { from { opacity: 0; transform: scale(.96); } }
+    @keyframes fade-in { from { opacity: 0; } }
+    .lb-inner { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 16px; }
+    .lb-img { max-height: calc(100dvh - 150px); width: auto; border-radius: 22px; box-shadow: 0 0 0 6px var(--ink), 0 30px 80px rgba(0,0,0,.5); }
+    .lb-caption { color: #fff; text-align: center; font-size: 15px; }
+    .lb-caption b { font-family: var(--display); font-size: 18px; letter-spacing: -.01em; }
+    .lb-controls { display: flex; gap: 10px; }
+    .icon-btn { width: 48px; height: 48px; display: grid; place-items: center; border: 0; border-radius: 50%; background: rgba(255,255,255,.14); color: #fff; cursor: pointer; transition: background-color 160ms ease, transform 160ms var(--ease-out); }
+    .icon-btn:active { transform: scale(.94); }
+    @media (hover: hover) { .icon-btn:hover { background: rgba(255,255,255,.24); } }
+
+    /* ───────── Equipo ───────── */
+    .team-section { padding: 104px 0 72px; background: var(--paper-2); }
+    .team { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 0; padding: 0; list-style: none; }
+    .member a {
+      display: flex; flex-direction: column; gap: 26px; height: 100%; padding: 26px; border-radius: 24px; background: var(--surface);
+      box-shadow: inset 0 0 0 1px var(--line), var(--shadow-sm); text-decoration: none;
+      transition: transform 220ms var(--ease-out), box-shadow 220ms ease;
+    }
+    .member a:active { transform: scale(.98); }
+    .avatar { width: 64px; height: 64px; display: grid; place-items: center; border-radius: 20px; font: 700 22px/1 var(--display); letter-spacing: -.02em; }
+    .member:nth-child(1) .avatar { background: #fde9bf; color: #6b4a05; }
+    .member:nth-child(2) .avatar { background: var(--brand-soft); color: var(--brand); }
+    .member:nth-child(3) .avatar { background: #f7e0da; color: #8f2c1d; }
+    .member h3 { font-size: 24px; font-weight: 700; letter-spacing: -.025em; }
+    .member .m-role { margin-top: 6px; color: var(--muted); font-size: 14px; }
+    .member .m-link { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 18px; border-top: 1px solid var(--line); color: var(--brand); font-size: 15px; font-weight: 600; }
+    .member .m-link small { display: block; color: var(--muted); font: 500 11px/1.4 var(--mono); letter-spacing: .03em; }
+    .member .m-link svg { flex: none; transition: transform 220ms var(--ease-out); }
+    @media (hover: hover) and (pointer: fine) {
+      .member a:hover { transform: translateY(-4px); box-shadow: inset 0 0 0 1px var(--line-strong), var(--shadow-md); }
+      .member a:hover .m-link svg { transform: translate(2px, -2px); }
+    }
+    .credits { display: flex; flex-wrap: wrap; gap: 10px 28px; margin-top: 36px; color: var(--ink-2); font-size: 14px; }
+    .credits span b { color: var(--ink); font-weight: 600; }
+
+    /* ───────── Footer ───────── */
+    .site-footer { padding: 36px 0 44px; background: var(--paper-2); border-top: 1px solid var(--line); }
+    .footer-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; }
+    .footer-row p { color: var(--muted); font-size: 13px; max-width: 620px; }
+    .footer-row b { color: var(--ink); }
+
+    /* ───────── Reveal (respeta reduced motion) ───────── */
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out); transition-delay: var(--d, 0ms); }
+    .reveal.is-in { opacity: 1; transform: none; }
+    .no-js .reveal { opacity: 1; transform: none; }
+
+    /* ───────── Responsive ───────── */
+    @media (max-width: 1100px) {
+      .process { grid-template-columns: repeat(4, 1fr); }
+      .process li:last-child { grid-column: span 2; }
+      .features { grid-template-columns: repeat(2, 1fr); }
+      .nav a.opt { display: none; }
+    }
+    @media (max-width: 960px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 44px; }
+      .hero-art { justify-self: start; max-width: 380px; }
+      .docs { grid-template-columns: 1fr; }
+      .doc-tabs { position: static; flex-direction: row; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px; margin: -4px; scrollbar-width: none; }
+      .doc-tabs::-webkit-scrollbar { display: none; }
+      .doc-tab { flex: 0 0 min(300px, 82%); scroll-snap-align: start; }
+      .pitch-grid { grid-template-columns: 1fr; }
+      .demo { grid-template-columns: repeat(2, 1fr); gap: 34px 26px; }
+      .team { grid-template-columns: 1fr; }
+      .nav { display: none; }
+    }
+    @media (max-width: 720px) {
+      :root { --shell: calc(100% - 36px); }
+      .hero { padding: 44px 0 40px; }
+      .hero-art { max-width: 300px; }
+      .hero-badge { left: auto; right: -8px; bottom: 18px; }
+      .stats { grid-template-columns: 1fr; margin-top: 44px; }
+      .section, .team-section { padding: 76px 0; }
+      .section-head { grid-template-columns: 1fr; gap: 14px; margin-bottom: 34px; }
+      .process { grid-template-columns: repeat(2, 1fr); }
+      .process a { min-height: 128px; }
+      .process li:last-child { grid-column: span 2; }
+      .doc-head { padding: 22px; }
+      .doc-quote { padding: 22px; }
+      .doc-viewer { display: none; }
+      .doc-mobile { display: flex; }
+      .browser-stage { height: 640px; }
+      .browser-stage.is-mobile iframe { width: calc(100% - 36px); }
+      .segmented.device-toggle { display: none; }
+      .features { grid-template-columns: 1fr; }
+      .demo { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 20px; padding: 28px 28px 16px 18px; margin: 0 -18px; scrollbar-width: none; }
+      .demo::-webkit-scrollbar { display: none; }
+      .shot { flex: 0 0 72%; scroll-snap-align: center; }
+      .brand-caption { display: none; }
+      .header-cta span.long { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body class="no-js">
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <header class="site-header" id="top">
+    <div class="shell header-row">
+      <a class="brand" href="#inicio" aria-label="Medellín Te Orienta, inicio">
+        <span class="logo-tile"><img src="assets/logo.png" alt="" width="32" height="32"></span>
+        <span><span class="brand-name">Medellín Te Orienta</span><span class="brand-caption">Proyecto universitario · 2026</span></span>
+      </a>
+      <nav class="nav" aria-label="Secciones">
+        <a href="#proceso" class="opt">Proceso</a>
+        <a href="#documentos">Documentos</a>
+        <a href="#pitch">Pitch</a>
+        <a href="#prototipo">Prototipo</a>
+        <a href="#demostracion">Demostración</a>
+        <a href="#equipo">Equipo</a>
+      </nav>
+      <a class="btn btn-sm header-cta" href="#solucion">
+        <span class="long">Ver solución</span><span class="sr-only"> final</span>
+        <svg class="arrow-r" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <!-- ───────── HERO ───────── -->
+    <section class="hero" id="inicio" aria-labelledby="hero-title">
+      <div class="shell">
+        <div class="hero-grid">
+          <div>
+            <p class="eyebrow reveal"><span class="dot" aria-hidden="true"></span> I.U. Pascual Bravo · TICs y Competencias Digitales</p>
+            <h1 id="hero-title" class="reveal" style="--d:60ms">Medellín<br><em>Te Orienta</em></h1>
+            <p class="hero-lead reveal" style="--d:120ms">Una guía web que reúne en un solo lugar los canales para reportar incidentes de inseguridad en Medellín. Aquí encontrarás todo el proceso: del problema a la solución.</p>
+            <div class="hero-actions reveal" style="--d:180ms">
+              <a class="btn" href="#proceso">Recorrer el proceso
+                <svg class="arrow-d" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+              </a>
+              <a class="btn btn-ghost" href="#solucion">Ver la solución final</a>
+            </div>
+            <div class="hero-meta reveal" style="--d:240ms">
+              <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>3 integrantes</span>
+              <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Noviembre 2026</span>
+              <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Medellín, Colombia</span>
+            </div>
+          </div>
+          <div class="hero-art reveal" style="--d:120ms">
+            <div class="hero-disc"><img src="assets/logo.png" alt="Logo de Medellín Te Orienta: una persona que sostiene una flecha que señala el camino" width="512" height="512"></div>
+            <div class="hero-badge" aria-hidden="true">
+              <div><b>54 %</b><small>de las víctimas en Medellín<br>no denunció en 2024</small></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats" role="list" aria-label="Cifras que motivan el proyecto">
+          <div class="stat reveal" role="listitem">
+            <div class="stat-num">54<span>%</span></div>
+            <p>de las personas víctimas de un delito en Medellín durante 2024 no realizó la denuncia.</p>
+            <cite>Medellín Cómo Vamos, 2024</cite>
+          </div>
+          <div class="stat reveal" role="listitem" style="--d:80ms">
+            <div class="stat-num">69,2<span>%</span></div>
+            <p>de las víctimas en Colombia no denunció en 2023. La brecha no es solo local.</p>
+            <cite>Cifra citada en el guion del pitch</cite>
+          </div>
+          <div class="stat reveal" role="listitem" style="--d:160ms">
+            <div class="stat-num">50<span>%</span></div>
+            <p>de quienes no denunciaron cree que hacerlo no habría generado ninguna solución.</p>
+            <cite>Medellín Cómo Vamos, 2024</cite>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── PROCESO ───────── -->
+    <section class="section" id="proceso" aria-labelledby="proceso-title" style="padding-top:40px">
+      <div class="shell">
+        <div class="section-head">
+          <div class="sec-num reveal" aria-hidden="true">↘</div>
+          <div class="reveal" style="--d:60ms">
+            <p class="kicker">El proceso</p>
+            <h2 class="section-title" id="proceso-title">Siete entregables, una misma pregunta.</h2>
+            <p class="section-copy">¿Cómo ayudamos a que una persona sepa a dónde acudir cuando es víctima o testigo de un delito? Así fue el camino.</p>
+          </div>
+        </div>
+        <ol class="process" role="list" style="margin:0;padding:0;list-style:none">
+          <li><a class="reveal" href="#planteamiento" data-doc="planteamiento"><span class="p-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg></span><span><span class="p-num">01</span><br><span class="p-title">Planteamiento del problema</span></span></a></li>
+          <li><a class="reveal" href="#ensayo" data-doc="ensayo"><span class="p-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg></span><span><span class="p-num">02</span><br><span class="p-title">Ensayo</span></span></a></li>
+          <li><a class="reveal" href="#guion" data-doc="guion"><span class="p-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span><span><span class="p-num">03</span><br><span class="p-title">Guion del pitch</span></span></a></li>
+          <li><a class="reveal" href="#pitch"><span class="p-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></span><span><span class="p-num">04</span><br><span class="p-title">Video del pitch</span></span></a></li>
+          <li><a class="reveal" href="#prototipo"><span class="p-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span><span><span class="p-num">05</span><br><span class="p-title">Prototipo</span></span></a></li>
+          <li><a class="reveal" href="#demostracion"><span class="p-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></span><span><span class="p-num">06</span><br><span class="p-title">Demostración</span></span></a></li>
+          <li><a class="reveal is-final" href="#solucion"><span class="p-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span><span class="p-num">07</span><br><span class="p-title">Solución final</span></span></a></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ───────── DOCUMENTOS ───────── -->
+    <section class="section" id="documentos" aria-labelledby="docs-title" style="padding-top:24px">
+      <span id="planteamiento" class="sr-only"></span><span id="ensayo" class="sr-only"></span><span id="guion" class="sr-only"></span>
+      <div class="shell">
+        <div class="section-head">
+          <div class="sec-num reveal" aria-hidden="true">01–03</div>
+          <div class="reveal" style="--d:60ms">
+            <p class="kicker">Investigación y documentos</p>
+            <h2 class="section-title" id="docs-title">Entender el problema antes de diseñar.</h2>
+          </div>
+        </div>
+
+        <div class="docs">
+          <div class="doc-tabs reveal" role="tablist" aria-label="Documentos del proyecto">
+            <button class="doc-tab" role="tab" id="tab-planteamiento" aria-controls="panel-planteamiento" aria-selected="true" data-doc="planteamiento">
+              <span class="t-num">01</span><span class="t-title">Planteamiento del problema</span><span class="t-sub">Qué pasa, a quién afecta y qué cuesta.</span>
+            </button>
+            <button class="doc-tab" role="tab" id="tab-ensayo" aria-controls="panel-ensayo" aria-selected="false" tabindex="-1" data-doc="ensayo">
+              <span class="t-num">02</span><span class="t-title">Ensayo</span><span class="t-sub">La delincuencia y la dificultad para reportar.</span>
+            </button>
+            <button class="doc-tab" role="tab" id="tab-guion" aria-controls="panel-guion" aria-selected="false" tabindex="-1" data-doc="guion">
+              <span class="t-num">03</span><span class="t-title">Guion del pitch</span><span class="t-sub">Cómo contamos la propuesta en pocos minutos.</span>
+            </button>
+          </div>
+
+          <div class="reveal" style="--d:80ms">
+            <!-- Planteamiento -->
+            <article class="doc-panel" role="tabpanel" id="panel-planteamiento" aria-labelledby="tab-planteamiento" data-src="docs/planteamiento-del-problema.pdf">
+              <header class="doc-head">
+                <div>
+                  <h3>Planteamiento del problema</h3>
+                  <div class="doc-meta"><span>PDF · 2 páginas</span><span>Integrantes del equipo</span></div>
+                </div>
+                <div class="doc-actions">
+                  <a class="btn btn-sm btn-ghost" href="docs/planteamiento-del-problema.pdf" target="_blank" rel="noopener">Abrir<span class="sr-only"> el planteamiento en una pestaña nueva</span>
+                    <svg class="arrow-ur" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+                  <a class="btn btn-sm" href="docs/planteamiento-del-problema.pdf" download>Descargar<span class="sr-only"> el planteamiento</span></a>
+                </div>
+              </header>
+              <blockquote class="doc-quote"><p>Los ciudadanos de Medellín tienen dificultades para reportar incidentes de delincuencia y acceder a ayuda, ya que desconocen los canales disponibles o se confunden sobre a dónde deben denunciar; eso les cuesta tiempo, orientación y oportunidades de recibir atención oportuna.</p></blockquote>
+              <div class="doc-viewer" data-viewer></div>
+              <div class="doc-mobile"><img src="assets/doc-planteamiento-del-problema.jpg" alt="Primera página del planteamiento del problema" width="700" height="906" loading="lazy"><p style="color:var(--ink-2);font-size:15px">En el celular, abre el PDF para leerlo completo con el visor de tu dispositivo.</p></div>
+            </article>
+
+            <!-- Ensayo -->
+            <article class="doc-panel" role="tabpanel" id="panel-ensayo" aria-labelledby="tab-ensayo" data-src="docs/ensayo.pdf" hidden>
+              <header class="doc-head">
+                <div>
+                  <h3>La delincuencia y la dificultad para reportar los incidentes</h3>
+                  <div class="doc-meta"><span>Ensayo · PDF · 6 páginas</span><span>6 de noviembre de 2026</span></div>
+                </div>
+                <div class="doc-actions">
+                  <a class="btn btn-sm btn-ghost" href="docs/ensayo.pdf" target="_blank" rel="noopener">Abrir<span class="sr-only"> el ensayo en una pestaña nueva</span>
+                    <svg class="arrow-ur" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+                  <a class="btn btn-sm" href="docs/ensayo.pdf" download>Descargar<span class="sr-only"> el ensayo</span></a>
+                </div>
+              </header>
+              <blockquote class="doc-quote"><p>La dificultad no termina cuando ocurre un hecho delictivo: también existe una brecha entre las personas que sufren estos acontecimientos y aquellas que finalmente deciden reportarlos.</p></blockquote>
+              <div class="doc-viewer" data-viewer></div>
+              <div class="doc-mobile"><img src="assets/doc-ensayo.jpg" alt="Portada del ensayo" width="700" height="906" loading="lazy"><p style="color:var(--ink-2);font-size:15px">En el celular, abre el PDF para leerlo completo con el visor de tu dispositivo.</p></div>
+            </article>
+
+            <!-- Guion -->
+            <article class="doc-panel" role="tabpanel" id="panel-guion" aria-labelledby="tab-guion" data-src="docs/guion-del-pitch.pdf" hidden>
+              <header class="doc-head">
+                <div>
+                  <h3>Guion del pitch</h3>
+                  <div class="doc-meta"><span>PDF · 2 páginas</span><span>Base del video del pitch</span></div>
+                </div>
+                <div class="doc-actions">
+                  <a class="btn btn-sm btn-ghost" href="docs/guion-del-pitch.pdf" target="_blank" rel="noopener">Abrir<span class="sr-only"> el guion en una pestaña nueva</span>
+                    <svg class="arrow-ur" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+                  <a class="btn btn-sm" href="docs/guion-del-pitch.pdf" download>Descargar<span class="sr-only"> el guion</span></a>
+                </div>
+              </header>
+              <blockquote class="doc-quote"><p>¿Alguna vez han presenciado un robo o una situación de inseguridad y no han sabido dónde reportarlo o qué hacer?</p></blockquote>
+              <div class="doc-viewer" data-viewer></div>
+              <div class="doc-mobile"><img src="assets/doc-guion-del-pitch.jpg" alt="Primera página del guion del pitch" width="700" height="906" loading="lazy"><p style="color:var(--ink-2);font-size:15px">En el celular, abre el PDF para leerlo completo con el visor de tu dispositivo.</p></div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── PITCH ───────── -->
+    <section class="section dark" id="pitch" aria-labelledby="pitch-title">
+      <div class="shell">
+        <div class="section-head">
+          <div class="sec-num reveal" aria-hidden="true">04</div>
+          <div class="reveal" style="--d:60ms">
+            <p class="kicker">Video del pitch</p>
+            <h2 class="section-title" id="pitch-title">Conocer los canales es el primer paso para actuar.</h2>
+          </div>
+        </div>
+        <div class="pitch-grid">
+          <div class="video-frame reveal" id="video-frame">
+            <!-- VIDEO: se completa en el script (VIDEO_CONFIG) -->
+            <div class="video-empty" id="video-empty">
+              <div>
+                <div class="play" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.4-6.5a1 1 0 0 0 0-1.8L9.5 4.6A1 1 0 0 0 8 5.5Z"/></svg></div>
+                <strong>Video del pitch</strong>
+                <p>El video se está preparando para publicarse aquí.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="pitch-card reveal" style="--d:80ms" aria-labelledby="pitch-card-title">
+            <p class="kicker" style="margin:0">Lo que contamos</p>
+            <h3 id="pitch-card-title">Una sola página para saber qué hacer.</h3>
+            <blockquote>No buscamos reemplazar a las autoridades ni sus canales oficiales, sino ayudar a los ciudadanos a saber cómo y dónde utilizarlos.</blockquote>
+            <ul class="pitch-points">
+              <li>El usuario elige qué le pasó: robo, amenaza, extorsión, fraude…</li>
+              <li>Recibe una ruta con pasos, entidad y canal adecuado.</li>
+              <li>Llama o denuncia en línea con un solo toque.</li>
+            </ul>
+            <a class="btn btn-gold btn-sm" href="#guion" data-doc="guion">Leer el guion completo
+              <svg class="arrow-r" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── PROTOTIPO ───────── -->
+    <section class="section" id="prototipo" aria-labelledby="proto-title">
+      <div class="shell">
+        <div class="section-head">
+          <div class="sec-num reveal" aria-hidden="true">05</div>
+          <div class="reveal" style="--d:60ms">
+            <p class="kicker">Prototipo de la solución</p>
+            <h2 class="section-title" id="proto-title">La primera versión navegable.</h2>
+            <p class="section-copy">Con el prototipo validamos la estructura: botón de emergencia al 123, selección del incidente, ruta recomendada y canales de ayuda. Puedes usarlo aquí mismo.</p>
+          </div>
+        </div>
+        <div class="row-between reveal">
+          <div class="segmented device-toggle" role="group" aria-label="Vista del prototipo" data-target="proto-stage">
+            <span class="thumb" aria-hidden="true"></span>
+            <button type="button" aria-pressed="true" data-mode="desktop">Escritorio</button>
+            <button type="button" aria-pressed="false" data-mode="mobile">Móvil</button>
+          </div>
+          <a class="btn btn-sm btn-ghost" href="prototipo/" target="_blank" rel="noopener">Abrir prototipo en pestaña nueva
+            <svg class="arrow-ur" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+        </div>
+        <div class="browser reveal">
+          <div class="browser-bar" aria-hidden="true">
+            <div class="browser-dots"><i></i><i></i><i></i></div>
+            <div class="browser-url"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>medellin-te-orienta / prototipo</div>
+          </div>
+          <div class="browser-stage" id="proto-stage">
+            <iframe data-src="prototipo/" title="Prototipo de Medellín Te Orienta" loading="lazy"></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── DEMOSTRACIÓN ───────── -->
+    <section class="section" id="demostracion" aria-labelledby="demo-title" style="background:var(--surface)">
+      <div class="shell">
+        <div class="section-head">
+          <div class="sec-num reveal" aria-hidden="true">06</div>
+          <div class="reveal" style="--d:60ms">
+            <p class="kicker">Demostración de la solución</p>
+            <h2 class="section-title" id="demo-title">Cuatro pantallas, una ruta clara.</h2>
+            <p class="section-copy">Así se ve el recorrido en el celular, desde que la persona entra hasta que encuentra a quién llamar. Toca una pantalla para ampliarla.</p>
+          </div>
+        </div>
+        <ol class="demo" role="list">
+          <li class="shot reveal">
+            <button type="button" data-index="0" aria-label="Ampliar pantalla 1: Pantalla de inicio"><span class="s-num" aria-hidden="true">1</span><img src="assets/demo/1.jpg" alt="Pantalla de inicio de Medellín Te Orienta con el mensaje: No tienes que saber a dónde ir" width="788" height="1600" loading="lazy"></button>
+            <div><h3>Pantalla de inicio</h3><p>Bienvenida a Medellín Te Orienta.</p></div>
+          </li>
+          <li class="shot reveal" style="--d:70ms">
+            <button type="button" data-index="1" aria-label="Ampliar pantalla 2: Selección del tipo de delito"><span class="s-num" aria-hidden="true">2</span><img src="assets/demo/2.jpg" alt="Listado de tipos de delito para elegir la situación" width="784" height="1600" loading="lazy"></button>
+            <div><h3>Selección del tipo de delito</h3><p>Identificación de la situación.</p></div>
+          </li>
+          <li class="shot reveal" style="--d:140ms">
+            <button type="button" data-index="2" aria-label="Ampliar pantalla 3: Detalle de la ruta recomendada"><span class="s-num" aria-hidden="true">3</span><img src="assets/demo/3.jpg" alt="Ruta recomendada con pasos a seguir y líneas de atención" width="775" height="1600" loading="lazy"></button>
+            <div><h3>Detalle de la ruta recomendada</h3><p>Pasos a seguir y líneas de atención según el delito seleccionado.</p></div>
+          </li>
+          <li class="shot reveal" style="--d:210ms">
+            <button type="button" data-index="3" aria-label="Ampliar pantalla 4: Líneas de ayuda y canales de atención"><span class="s-num" aria-hidden="true">4</span><img src="assets/demo/4.jpg" alt="Líneas de ayuda y canales de atención disponibles" width="776" height="1600" loading="lazy"></button>
+            <div><h3>Líneas de ayuda y canales de atención</h3><p>Opciones de ayuda y acompañamiento.</p></div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ───────── SOLUCIÓN FINAL ───────── -->
+    <section class="section" id="solucion" aria-labelledby="sol-title">
+      <div class="shell">
+        <div class="section-head">
+          <div class="sec-num reveal" aria-hidden="true">07</div>
+          <div class="reveal" style="--d:60ms">
+            <p class="kicker">Solución final</p>
+            <h2 class="section-title" id="sol-title">No tienes que saber a dónde ir.</h2>
+            <p class="section-copy">La versión final de Medellín Te Orienta: cuéntanos qué pasó y te mostramos el siguiente paso y el canal adecuado. Pruébala aquí o ábrela completa.</p>
+          </div>
+        </div>
+        <div class="row-between reveal">
+          <div class="segmented device-toggle" role="group" aria-label="Vista de la solución" data-target="sol-stage">
+            <span class="thumb" aria-hidden="true"></span>
+            <button type="button" aria-pressed="true" data-mode="desktop">Escritorio</button>
+            <button type="button" aria-pressed="false" data-mode="mobile">Móvil</button>
+          </div>
+          <a class="btn btn-sm" href="solucion/" target="_blank" rel="noopener">Abrir Medellín Te Orienta
+            <svg class="arrow-ur" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+        </div>
+        <div class="browser reveal">
+          <div class="browser-bar" aria-hidden="true">
+            <div class="browser-dots"><i></i><i></i><i></i></div>
+            <div class="browser-url"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>medellin-te-orienta / solucion</div>
+          </div>
+          <div class="browser-stage" id="sol-stage">
+            <iframe data-src="solucion/" title="Solución final de Medellín Te Orienta" loading="lazy"></iframe>
+          </div>
+        </div>
+        <div class="features">
+          <div class="feature reveal"><div class="f-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div><h3>8 situaciones</h3><p>Robo, amenazas, extorsión, violencia contra la mujer, fraude digital, desaparición, vandalismo y otros.</p></div>
+          <div class="feature reveal" style="--d:60ms"><div class="f-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg></div><h3>Ruta paso a paso</h3><p>Qué hacer, a qué entidad acudir y cómo hacer el reporte.</p></div>
+          <div class="feature reveal" style="--d:120ms"><div class="f-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2Z"/></svg></div><h3>Llamada directa</h3><p>Líneas de ayuda y emergencia 123 a un toque de distancia.</p></div>
+          <div class="feature reveal" style="--d:180ms"><div class="f-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h3>Sin datos personales</h3><p>Orientación inmediata, sin registro, accesible y en modo claro u oscuro.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── EQUIPO ───────── -->
+    <section class="team-section" id="equipo" aria-labelledby="team-title">
+      <div class="shell">
+        <div class="section-head">
+          <div class="sec-num reveal" aria-hidden="true">✦</div>
+          <div class="reveal" style="--d:60ms">
+            <p class="kicker">Participantes del proyecto</p>
+            <h2 class="section-title" id="team-title">El equipo detrás de la ruta.</h2>
+          </div>
+        </div>
+        <ul class="team" role="list">
+          <li class="member reveal">
+            <a href="https://sites.google.com/pascualbravo.edu.co/angelesvisual?usp=sharing" target="_blank" rel="noopener">
+              <div class="avatar" aria-hidden="true">MA</div>
+              <div><h3>Mónica Alvarado</h3><p class="m-role">Integrante del proyecto</p></div>
+              <span class="m-link"><span>Ver portafolio<small>Google Sites · angelesvisual</small></span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+              <span class="sr-only">(se abre en una pestaña nueva)</span>
+            </a>
+          </li>
+          <li class="member reveal" style="--d:70ms">
+            <a href="https://sites.google.com/pascualbravo.edu.co/emanuelhenaoportafolio/inicio" target="_blank" rel="noopener">
+              <div class="avatar" aria-hidden="true">EH</div>
+              <div><h3>Emanuel Henao</h3><p class="m-role">Integrante del proyecto</p></div>
+              <span class="m-link"><span>Ver portafolio<small>Google Sites · emanuelhenaoportafolio</small></span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+              <span class="sr-only">(se abre en una pestaña nueva)</span>
+            </a>
+          </li>
+          <li class="member reveal" style="--d:140ms">
+            <a href="https://sites.google.com/pascualbravo.edu.co/mi-perfilprofesional/pagina-de-inicio" target="_blank" rel="noopener">
+              <div class="avatar" aria-hidden="true">IS</div>
+              <div><h3>Isabella Sepúlveda</h3><p class="m-role">Integrante del proyecto</p></div>
+              <span class="m-link"><span>Ver portafolio<small>Google Sites · mi-perfilprofesional</small></span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+              <span class="sr-only">(se abre en una pestaña nueva)</span>
+            </a>
+          </li>
+        </ul>
+        <div class="credits reveal">
+          <span><b>Institución:</b> I.U. Pascual Bravo</span>
+          <span><b>Curso:</b> TICs y Competencias Digitales</span>
+          <span><b>Docente:</b> Julián Andrés Correa Uribe</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-row">
+      <a class="brand" href="#inicio" aria-label="Volver al inicio">
+        <span class="logo-tile"><img src="assets/logo.png" alt="" width="32" height="32"></span>
+        <span class="brand-name">Medellín Te Orienta</span>
+      </a>
+      <p>Proyecto académico. No es un canal oficial de la Alcaldía, la Policía ni la Fiscalía. En caso de emergencia llama al <b>123</b>.</p>
+    </div>
+  </footer>
+
+  <dialog class="lightbox" id="lightbox" aria-label="Pantalla ampliada">
+    <div class="lb-inner">
+      <img class="lb-img" id="lb-img" src="" alt="">
+      <p class="lb-caption" id="lb-caption"></p>
+      <div class="lb-controls">
+        <button class="icon-btn" type="button" id="lb-prev" aria-label="Pantalla anterior"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18 9 12l6-6"/></svg></button>
+        <button class="icon-btn" type="button" id="lb-close" aria-label="Cerrar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        <button class="icon-btn" type="button" id="lb-next" aria-label="Pantalla siguiente"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    /* ───── Configuración del video ─────
+       Usa UNA de las dos opciones:
+       - youtube: ID o enlace del video en YouTube (p. ej. "https://youtu.be/XXXXXXXXXXX")
+       - file:    ruta a un MP4 dentro del repo (p. ej. "video/video-pitch.mp4") */
+    const VIDEO_CONFIG = { youtube: "", file: "", poster: "" };
+
+    document.body.classList.remove('no-js');
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* Header con borde al hacer scroll */
+    const header = document.querySelector('.site-header');
+    const onScroll = () => header.classList.toggle('is-scrolled', scrollY > 8);
+    addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+    /* Reveal al entrar en pantalla */
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: .08 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    /* Nav activa */
+    const navLinks = [...document.querySelectorAll('.nav a')];
+    const sections = navLinks.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+    const navIO = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        navLinks.forEach(a => a.setAttribute('aria-current', a.getAttribute('href') === '#' + e.target.id ? 'true' : 'false'));
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    sections.forEach(s => navIO.observe(s));
+
+    /* Tabs de documentos (con carga diferida del PDF) */
+    const tabs = [...document.querySelectorAll('.doc-tab')];
+    const isDesktop = () => matchMedia('(min-width: 721px)').matches;
+    function loadViewer(panel) {
+      const v = panel.querySelector('[data-viewer]');
+      if (!v || v.dataset.loaded || !isDesktop()) return;
+      const f = document.createElement('iframe');
+      f.src = panel.dataset.src + '#view=FitH&toolbar=1';
+      f.title = panel.querySelector('h3').textContent;
+      v.appendChild(f); v.dataset.loaded = '1';
+    }
+    function selectDoc(key, focus) {
+      tabs.forEach(t => {
+        const on = t.dataset.doc === key;
+        t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1;
+        const p = document.getElementById(t.getAttribute('aria-controls'));
+        if (on && p.hidden) { p.hidden = false; if (!reduce) { p.classList.remove('is-entering'); void p.offsetWidth; p.classList.add('is-entering'); } }
+        else if (!on) p.hidden = true;
+        if (on) { loadViewer(p); if (focus) t.focus(); t.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
+      });
+    }
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => selectDoc(t.dataset.doc));
+      t.addEventListener('keydown', (e) => {
+        const dir = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+        if (!dir) return; e.preventDefault();
+        selectDoc(tabs[(i + dir + tabs.length) % tabs.length].dataset.doc, true);
+      });
+    });
+    document.querySelectorAll('a[data-doc]').forEach(a => a.addEventListener('click', () => selectDoc(a.dataset.doc)));
+    const docFromHash = () => { const k = location.hash.slice(1); if (['planteamiento', 'ensayo', 'guion'].includes(k)) selectDoc(k); };
+    addEventListener('hashchange', docFromHash);
+    docFromHash();
+    const docsIO = new IntersectionObserver((es) => { if (es[0].isIntersecting) { loadViewer(document.querySelector('.doc-panel:not([hidden])')); docsIO.disconnect(); } }, { rootMargin: '200px' });
+    docsIO.observe(document.getElementById('documentos'));
+
+    /* Iframes diferidos (prototipo y solución) */
+    const frameIO = new IntersectionObserver((es) => es.forEach(e => {
+      if (e.isIntersecting) { e.target.src = e.target.dataset.src; frameIO.unobserve(e.target); }
+    }), { rootMargin: '300px' });
+    document.querySelectorAll('iframe[data-src]').forEach(f => frameIO.observe(f));
+
+    /* Selector Escritorio / Móvil */
+    document.querySelectorAll('.segmented').forEach(seg => {
+      const thumb = seg.querySelector('.thumb');
+      const btns = [...seg.querySelectorAll('button')];
+      const stage = document.getElementById(seg.dataset.target);
+      const place = (b) => { thumb.style.width = b.offsetWidth + 'px'; thumb.style.transform = `translateX(${b.offsetLeft - 4}px)`; };
+      btns.forEach(b => b.addEventListener('click', () => {
+        btns.forEach(x => x.setAttribute('aria-pressed', x === b));
+        stage.classList.toggle('is-mobile', b.dataset.mode === 'mobile');
+        place(b);
+      }));
+      requestAnimationFrame(() => place(btns.find(b => b.getAttribute('aria-pressed') === 'true')));
+      document.fonts && document.fonts.ready.then(() => place(btns.find(b => b.getAttribute('aria-pressed') === 'true')));
+    });
+
+    /* Video */
+    (function setupVideo() {
+      const frame = document.getElementById('video-frame');
+      const empty = document.getElementById('video-empty');
+      const yt = VIDEO_CONFIG.youtube.trim();
+      if (yt) {
+        const id = (yt.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/) || [])[1] || yt;
+        const f = document.createElement('iframe');
+        f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?rel=0';
+        f.title = 'Video del pitch de Medellín Te Orienta';
+        f.allow = 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        f.allowFullscreen = true; f.loading = 'lazy';
+        empty.replaceWith(f);
+      } else if (VIDEO_CONFIG.file) {
+        const v = document.createElement('video');
+        v.controls = true; v.preload = 'metadata'; v.playsInline = true;
+        if (VIDEO_CONFIG.poster) v.poster = VIDEO_CONFIG.poster;
+        v.src = VIDEO_CONFIG.file; v.setAttribute('aria-label', 'Video del pitch de Medellín Te Orienta');
+        empty.replaceWith(v);
+      }
+    })();
+
+    /* Lightbox de la demostración */
+    const shots = [...document.querySelectorAll('.shot')].map(li => ({
+      src: li.querySelector('img').src, alt: li.querySelector('img').alt,
+      title: li.querySelector('h3').textContent, text: li.querySelector('p').textContent
+    }));
+    const lb = document.getElementById('lightbox'), lbImg = document.getElementById('lb-img'), lbCap = document.getElementById('lb-caption');
+    let cur = 0, opener = null;
+    function show(i) {
+      cur = (i + shots.length) % shots.length; const s = shots[cur];
+      lbImg.src = s.src; lbImg.alt = s.alt;
+      lbCap.innerHTML = `<b>${cur + 1}. ${s.title}</b><br>${s.text}`;
+    }
+    document.querySelectorAll('.shot button').forEach(b => b.addEventListener('click', () => {
+      opener = b; show(+b.dataset.index); lb.showModal();
+    }));
+    document.getElementById('lb-prev').addEventListener('click', () => show(cur - 1));
+    document.getElementById('lb-next').addEventListener('click', () => show(cur + 1));
+    document.getElementById('lb-close').addEventListener('click', () => lb.close());
+    lb.addEventListener('click', (e) => { if (e.target === lb) lb.close(); });
+    lb.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') show(cur - 1); if (e.key === 'ArrowRight') show(cur + 1); });
+    lb.addEventListener('close', () => opener && opener.focus());
+  </script>
+</body>
+</html>
