@@ -165,6 +165,8 @@
     .stat-num span { color: var(--brand); }
     .stat p { margin-top: 10px; color: var(--ink-2); font-size: 15px; line-height: 1.45; }
     .stat cite { display: block; margin-top: 10px; color: var(--muted); font: 500 11px/1.4 var(--mono); letter-spacing: .04em; text-transform: uppercase; font-style: normal; }
+    .stat cite a { color: inherit; text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; transition: color 160ms ease; }
+    @media (hover: hover) { .stat cite a:hover { color: var(--brand); } }
 
     /* ───────── Secciones ───────── */
     .section { padding: 104px 0; }
@@ -467,8 +469,8 @@
           </div>
           <div class="stat reveal" role="listitem" style="--d:80ms">
             <div class="stat-num">69,2<span>%</span></div>
-            <p>de las víctimas en Colombia no denunció en 2023. La brecha no es solo local.</p>
-            <cite>Cifra citada en el guion del pitch</cite>
+            <p>de las víctimas de un delito en Colombia no lo denunció en 2023 (cifra oculta). La brecha no es solo local.</p>
+            <cite><a href="https://www.dane.gov.co/files/operaciones/ECSC/bol-ECSC-2024.pdf" target="_blank" rel="noopener">DANE, Encuesta de Convivencia y Seguridad Ciudadana 2024</a></cite>
           </div>
           <div class="stat reveal" role="listitem" style="--d:160ms">
             <div class="stat-num">50<span>%</span></div>
